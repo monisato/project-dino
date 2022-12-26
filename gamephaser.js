@@ -29,14 +29,14 @@ const imgSrc = [
 ]
 
 const spriteSrc = [
-    { key: 'dinoGre', src: './assets/spritedino_vita.png'},
+    { key: 'dinoGre', src: './assets/spritedino_vita_cut.png'},
     { key: 'dinoRed', src: './assets/spritedino_mort.png'},
     { key: 'dinoYel', src: './assets/spritedino_tard.png'},
     { key: 'dinoBlu', src: './assets/spritedino_doux.png'}
 ]
 
-//const spriteFrame = { w: 22, h:18 } //novo frame
-const spriteFrame = { w: 24, h:24 }
+const spriteFrame = { w: 22, h:18 } //new frame specs
+//const spriteFrame = { w: 24, h:24 } //old frame specs
 
 function preload () {
     for (i=0; i<imgSrc.length; i++) {
@@ -52,6 +52,8 @@ function preload () {
 }
 
 var platforms;
+
+let direction = true; // true = right side, false = left side
 
 function create () {
     this.add.image(400, 300, 'sky')
@@ -74,44 +76,49 @@ function create () {
 
     this.anims.create({
         key: 'left-walk',
-        frames: this.anims.generateFrameNumbers('dinoGre', { frames: [7, 8, 9, 10, 11, 12, 13]}),
+        frames: this.anims.generateFrameNumbers('dinoGre', { frames: [42, 43, 44, 45, 46, 47]}),
         frameRate: 10,
         repeat: -1
     });
-
     this.anims.create({
         key: 'left-idle',
-        frames: this.anims.generateFrameNumbers('dinoGre', { frames: [0, 1, 2, 3] }),
+        frames: this.anims.generateFrameNumbers('dinoGre', { frames: [35, 36, 37, 38] }),
         frameRate: 10,
         repeat: -1
     });
-
     this.anims.create({
         key: 'right-walk',
-        frames: this.anims.generateFrameNumbers('dinoGre', { frames: [7, 8, 9, 10, 11, 12, 13]}),
+        frames: this.anims.generateFrameNumbers('dinoGre', { frames: [7, 8, 9, 10, 11, 12]}),
         frameRate: 10,
         repeat: -1
     });
-
     this.anims.create({
         key: 'right-idle',
         frames: this.anims.generateFrameNumbers('dinoGre', { frames: [0, 1, 2, 3] }),
         frameRate: 10,
         repeat: -1
     });
+
 }
 
 function update () {
     cursors = this.input.keyboard.createCursorKeys();
+
     if (cursors.left.isDown) {
         player.setVelocityX(-160);
-        player.anims.play('left', true);
+        player.anims.play('left-walk', true);
+        direction = false;
     } else if (cursors.right.isDown) {
         player.setVelocityX(160);
-        player.anims.play('right', true);
+        player.anims.play('right-walk', true);
+        direction = true;
     } else {
         player.setVelocityX(0);
-        player.anims.play('turn');
+        if (direction) {
+            player.anims.play('right-idle', true);
+        } else {
+            player.anims.play('left-idle', true);
+        }
     }
 
     if (cursors.up.isDown && player.body.touching.down) {
