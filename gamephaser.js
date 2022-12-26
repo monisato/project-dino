@@ -21,23 +21,24 @@ var config = {
 
 var game = new Phaser.Game(config);
 
+const imgSrc = [
+    { key: 'sky', src: './assets/sky.png'},
+    { key: 'ground', src: './assets/platform.png'},
+    { key: 'shadow', src: './assets/shadow.png'},
+    { key: 'selectScreen', src: './assets/bg_select_s.png'}
+]
+
+const spriteSrc = [
+    { key: 'dinoGre', src: './assets/spritedino_vita.png'},
+    { key: 'dinoRed', src: './assets/spritedino_mort.png'},
+    { key: 'dinoYel', src: './assets/spritedino_tard.png'},
+    { key: 'dinoBlu', src: './assets/spritedino_doux.png'}
+]
+
+//const spriteFrame = { w: 22, h:18 } //novo frame
+const spriteFrame = { w: 24, h:24 }
+
 function preload () {
-    const imgSrc = [
-        { key: 'sky', src: './assets/sky.png'},
-        { key: 'ground', src: './assets/platform.png'},
-        { key: 'shadow', src: './assets/shadow.png'},
-        { key: 'selectScreen', src: './assets/bg_select_s.png'}
-    ]
-    
-    const spriteSrc = [
-        { key: 'dinoGre', src: './assets/spritedino_vita_cut.png'},
-        { key: 'dinoRed', src: './assets/spritedino_mort.png'},
-        { key: 'dinoYel', src: './assets/spritedino_tard.png'},
-        { key: 'dinoBlu', src: './assets/spritedino_doux.png'}
-    ]
-
-    const spriteFrame = { w: 22, h:18 }
-
     for (i=0; i<imgSrc.length; i++) {
         this.load.image(imgSrc[i].key, imgSrc[i].src)
     }
@@ -73,27 +74,28 @@ function create () {
 
     this.anims.create({
         key: 'left-walk',
-        frames: this.anims.generateFrameNumbers('dinoGre', { start: 20, end: 48 }),
+        frames: this.anims.generateFrameNumbers('dinoGre', { frames: [7, 8, 9, 10, 11, 12, 13]}),
         frameRate: 10,
         repeat: -1
     });
 
     this.anims.create({
         key: 'left-idle',
-        frames: [ { key: 'dinoGre', frame: 4 } ],
-        frameRate: 10
+        frames: this.anims.generateFrameNumbers('dinoGre', { frames: [0, 1, 2, 3] }),
+        frameRate: 10,
+        repeat: -1
     });
 
     this.anims.create({
         key: 'right-walk',
-        frames: this.anims.generateFrameNumbers('dinoGre', { start: 5, end: 8 }),
+        frames: this.anims.generateFrameNumbers('dinoGre', { frames: [7, 8, 9, 10, 11, 12, 13]}),
         frameRate: 10,
         repeat: -1
     });
 
     this.anims.create({
         key: 'right-idle',
-        frames: this.anims.generateFrameNumbers('dinoGre', { start: 5, end: 8 }),
+        frames: this.anims.generateFrameNumbers('dinoGre', { frames: [0, 1, 2, 3] }),
         frameRate: 10,
         repeat: -1
     });
