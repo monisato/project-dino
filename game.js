@@ -6,12 +6,16 @@ const dinoSpriteSize = 24;
 let touchdev = false; //not touchable screen
 let mobiledev = false; //not mobile device
 let scalerate = 1; //base scale
+let loading = true;
 var lastKeyPressed; //get resting position
 
-const bgImgSrc = [
-    './assets/bg_fight.png',
-    './assets/bg_select_s.png',
-    './assets/shadow.png'
+const bgImgSrc = './assets/bg_fight.png'
+bgImg = new Image()
+bgImg.src = bgImgSrc
+
+const effectsImgSrc = [
+    './assets/shadow.png',
+    './assets/bg_select_s.png'
 ]
 
 const playerImgSrc = [
@@ -21,18 +25,9 @@ const playerImgSrc = [
     './assets/spritedino_doux.png'
 ]
 
-let bgImg = new Array();
+let effectsImg = new Array();
 let playerImg = new Array();
 
-class Sprite {
-    constructor({ position, image }) {
-        this.position = position
-        this.image = image
-    }
-    draw() {
-        context.drawImage(this.image, this.position.x, this.position.y) // fight background
-    }
-}
 
 // run when loaded
 window.onload = function(){
@@ -57,36 +52,43 @@ window.onload = function(){
 	scalerate = Math.min(window.innerWidth/view.w, window.innerHeight/view.h);
 	if(!mobiledev) scalerate = 2;
     canvas = document.getElementById('canvas');
-	canvas.width = view.w;
-	canvas.height = view.h;
+    canvas.width = view.w;
+    canvas.height = view.h;
     canvas.style.width = view.w*scalerate+'px';
     canvas.style.height = view.h*scalerate+'px';
-	context = canvas.getContext('2d');
+    context = canvas.getContext('2d');
 		
     
     context.fillStyle = 'white'
     context.fillRect(0,0, canvas.w, canvas.h)
-        
     
-    for (i=0; i<bgImgSrc.length; i++){
-        bgImg[i] = new Image()
-        bgImg[i].src = bgImgSrc[i]
+    for (i=0; i<effectsImgSrc.length; i++){
+        effectsImgSrc[i] = new Image()
+        effectsImgSrc[i].src = effectsImgSrc[i]
     }
 
     for (i=0; i<playerImgSrc.length; i++){
         playerImg[i] = new Image()
         playerImg[i].src = playerImgSrc[i]
     }
-    
+
+    loading = false
 }
-    
+
+
+class Sprite {
+    constructor({ position, image }) {
+        this.position = position
+        this.image = image
+    }
+    draw() {
+        context.drawImage(this.image, this.position.x, this.position.y) // fight background
+    }
+}
 
 const background = new Sprite({
-    position: {
-        x: 0,
-        y: 0
-    },
-    image: bgImg[0]
+    position: { x: 0, y: -190 },
+    image: bgImg
 })
 
 const keys = {
@@ -118,7 +120,7 @@ function animate() {
         playerImg[0].height
         )
     if (keys.d.pressed) {
-        background.position.x = background.position.x - 2
+        background.position.x = background.position.x - 20
     }
 
     // dinos select
@@ -167,7 +169,8 @@ function animate() {
     //     playerImg[3].height
     //     )
 }
-// animate()
+animate()
+
 
 
 //////////////////// controllers
@@ -204,6 +207,7 @@ window.addEventListener('keyup', (e) => {
             break
     }
 })
+    
 
 
 

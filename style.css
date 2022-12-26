@@ -1,33 +1,15 @@
 body {
     background-color: black;
+    image-rendering: optimizeSpeed;              /* Older versions of FF */
+    image-rendering: -moz-crisp-edges;           /* FF 6.0+ */
+    image-rendering: -webkit-optimize-contrast;  /* Webkit (non standard naming) */
+    image-rendering: -o-crisp-edges;             /* OS X & Windows Opera (12.02+) */
+    image-rendering: crisp-edges;                /* Possible future browsers. */
+    -ms-interpolation-mode: nearest-neighbor;    /* IE (non standard naming) */
+    image-rendering: pixelated;                  /* Chrome 41 */
 }
 
 main {
     display: block;
     margin: auto;
 }
-
-canvas {
-    background-color: white;
-    display:block;
-    margin:auto;
-    -ms-interpolation-mode: nearest-neighbor; 
-    image-rendering: -webkit-optimize-contrast;
-    image-rendering: -moz-crisp-edges;         
-    image-rendering: -o-crisp-edges;           
-    image-rendering: pixelated;
-}
-
-#buttons {
-    width: 250px;
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: space-evenly;
-}
-
-/* mirror image
-#mortRed {
-    transform: scaleX(-1);
-} 
-*/
