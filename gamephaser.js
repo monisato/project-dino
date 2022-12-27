@@ -20,12 +20,27 @@ var config = {
 };
 
 var game = new Phaser.Game(config);
+var platforms; // test
+var map;
+var tileset;
+var stage;
+var player;
+var groundLayer;
+let direction = true; // for idle animation // true = right side, false = left side 
 
 const imgSrc = [
-    { key: 'sky', src: './assets/sky.png'},
+    { key: 'bg', src: './assets/map_background.png'},
+    { key: 'mg', src: './assets/map_midground.png'},
+    { key: 'fg', src: './assets/map_foreground.png'},
     { key: 'ground', src: './assets/platform.png'},
     { key: 'shadow', src: './assets/shadow.png'},
     { key: 'selectScreen', src: './assets/bg_select_s.png'}
+]
+
+const tilesSrc = [
+    { key: 'bgtiles', src: './assets/tilemap_packed.png'},
+    { key: 'mgtiles', src: './assets/tiles_packed.png'},
+    { key: 'collision', src: './assets/collision.png'},
 ]
 
 const spriteSrc = [
@@ -39,6 +54,8 @@ const spriteFrame = { w: 22, h:18 } //new frame specs
 //const spriteFrame = { w: 24, h:24 } //old frame specs
 
 function preload () {
+    this.load.tilemapTiledJSON('map', 'assets/collision-map.json');
+
     for (i=0; i<imgSrc.length; i++) {
         this.load.image(imgSrc[i].key, imgSrc[i].src)
     }
@@ -51,28 +68,37 @@ function preload () {
     }
 }
 
-var platforms;
-
-let direction = true; // true = right side, false = left side
 
 function create () {
-    this.add.image(400, 300, 'sky')
+    this.add.image(400, 350, 'bg').setScale(3);
 
-    platforms = this.physics.add.staticGroup();
+    map = this.make.tilemap({ key: 'map'})
+    const midTiles = map.addTilesetImage('mgtiles');
+    map.createLayer('midground', midTiles, 0,0);
 
-    platforms.create(400, 568, 'ground').setScale(2).refreshBody();
+    groundLayer.setCollisionBetween(1,200)
 
-    platforms.create(600, 400, 'ground');
-    platforms.create(50, 250, 'ground');
-    platforms.create(750, 220, 'ground');
+    // stage = this.physics.add.staticGroup();
+    // stage.create(1200, 400, 'mg').setScale(3);
+
+    // map = this.add.tilemap('mg');
+    // this.addTilesetImage('boundaries', 'tiles');
+
+    // platforms = this.physics.add.staticGroup();
+
+    // platforms.create(400, 568, 'ground').setScale(2).refreshBody();
+
+    // platforms.create(600, 400, 'ground');
+    // platforms.create(50, 250, 'ground');
+    // platforms.create(750, 220, 'ground');
 
 
-    player = this.physics.add.sprite(100, 450, 'dinoGre').setScale(3);
+    player = this.physics.add.sprite(100, 200, 'dinoGre').setScale(3);
 
     player.setBounce(0.2);
     player.setCollideWorldBounds(true);
     player.body.setGravityY(200);
-    this.physics.add.collider(player, platforms);
+    this.physics.add.collider(player, platforms, stage);
 
     this.anims.create({
         key: 'left-walk',

@@ -7,9 +7,8 @@ body {
     image-rendering: crisp-edges;                /* Possible future browsers. */
     -ms-interpolation-mode: nearest-neighbor;    /* IE (non standard naming) */
     image-rendering: pixelated;                  /* Chrome 41 */
-}
 
-main {
-    display: block;
-    margin: auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
