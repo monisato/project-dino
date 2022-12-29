@@ -1,5 +1,4 @@
 ///////////// Phaser Version
-
 var config = {
     type: Phaser.AUTO,
     width: 800,
@@ -43,6 +42,8 @@ const tilesSrc = [
     { key: 'collision', src: './assets/collision.png'},
 ]
 
+const stageSrc = { key: 'map', src: './assets/collision-map.json' }
+
 const spriteSrc = [
     { key: 'dinoGre', src: './assets/spritedino_vita_cut.png'},
     { key: 'dinoRed', src: './assets/spritedino_mort.png'},
@@ -50,55 +51,54 @@ const spriteSrc = [
     { key: 'dinoBlu', src: './assets/spritedino_doux.png'}
 ]
 
-const spriteFrame = { w: 22, h:18 } //new frame specs
+const tsize = { w:18, h:18 } //tile size
+const ssize = { w:22, h:18 } //new sprite frame size specs
 //const spriteFrame = { w: 24, h:24 } //old frame specs
 
 function preload () {
-    this.load.tilemapTiledJSON('map', 'assets/collision-map.json');
+    for (i=0; i<tilesSrc.length; i++) {
+        this.load.image(tilesSrc[i].key, tilesSrc[i].src)
+    }
 
+    // load tile map
+    this.load.tilemapTiledJSON(stageSrc.key, stageSrc.src);
+
+    // loading images
     for (i=0; i<imgSrc.length; i++) {
         this.load.image(imgSrc[i].key, imgSrc[i].src)
     }
+
     for (i=0; i<spriteSrc.length; i++) {
         this.load.spritesheet(
             spriteSrc[i].key, 
             spriteSrc[i].src, 
-            {frameWidth: spriteFrame.w, frameHeight: spriteFrame.h}
+            {frameWidth: ssize.w, frameHeight: ssize.h}
         )
     }
 }
 
 
 function create () {
-    this.add.image(400, 350, 'bg').setScale(3);
+    this.add.image(400, 350, 'bg').setScale(3); //sky background
 
-    map = this.make.tilemap({ key: 'map'})
-    const midTiles = map.addTilesetImage('mgtiles');
-    map.createLayer('midground', midTiles, 0,0);
+    map = this.make.tilemap({ key: stageSrc.key, tileWidth: tsize.w, tileHeight: tsize.h })
+    const midTiles = map.addTilesetImage('tiles_packed', 'mgtiles'); // name of tileset in Tiled, key from preload
+    const layer = map.createLayer('midground', midTiles, 0, -480).setScale(3); //name of layer in Tiled
 
-    groundLayer.setCollisionBetween(1,200)
-
-    // stage = this.physics.add.staticGroup();
-    // stage.create(1200, 400, 'mg').setScale(3);
-
-    // map = this.add.tilemap('mg');
-    // this.addTilesetImage('boundaries', 'tiles');
-
+    // collider test
     // platforms = this.physics.add.staticGroup();
-
     // platforms.create(400, 568, 'ground').setScale(2).refreshBody();
-
     // platforms.create(600, 400, 'ground');
     // platforms.create(50, 250, 'ground');
     // platforms.create(750, 220, 'ground');
 
-
-    player = this.physics.add.sprite(100, 200, 'dinoGre').setScale(3);
+    player = this.physics.add.sprite(150, 200, 'dinoGre').setScale(3);
 
     player.setBounce(0.2);
-    player.setCollideWorldBounds(true);
+    // player.setCollideWorldBounds(true); //collide with the canvas size limit
     player.body.setGravityY(200);
-    this.physics.add.collider(player, platforms, stage);
+    this.physics.add.collider(player, layer, platforms);
+    layer.setCollisionBetween(1,160);
 
     this.anims.create({
         key: 'left-walk',
@@ -125,6 +125,8 @@ function create () {
         repeat: -1
     });
 
+    this.cameras.main.setBounds(0, 0, map.widthInPixels*3, map.heightInPixels*3);
+    this.cameras.main.startFollow(player);
 }
 
 function update () {
@@ -147,7 +149,10 @@ function update () {
         }
     }
 
-    if (cursors.up.isDown && player.body.touching.down) {
+    // if (cursors.up.isDown && player.body.touching.down) {
+    //     player.setVelocityY(-450);
+    // }
+    if (cursors.up.isDown && player.body.onFloor()) {
         player.setVelocityY(-450);
     }
 }
