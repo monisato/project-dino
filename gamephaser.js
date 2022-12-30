@@ -20,6 +20,7 @@ var config = {
 
 var game = new Phaser.Game(config);
 var platforms; // test
+var sky;
 var map;
 var tileset;
 var stage;
@@ -42,7 +43,7 @@ const tilesSrc = [
     { key: 'collision', src: './assets/collision.png'},
 ]
 
-const stageSrc = { key: 'map', src: './assets/collision-map.json' }
+const stageSrc = { key: 'map', src: './assets/map.json' }
 
 const spriteSrc = [
     { key: 'dinoGre', src: './assets/spritedino_vita_cut.png'},
@@ -79,11 +80,11 @@ function preload () {
 
 
 function create () {
-    this.add.image(400, 350, 'bg').setScale(3); //sky background
+    sky = this.add.image(0, 350, 'bg').setScale(3); //sky background
 
     map = this.make.tilemap({ key: stageSrc.key, tileWidth: tsize.w, tileHeight: tsize.h })
     const midTiles = map.addTilesetImage('tiles_packed', 'mgtiles'); // name of tileset in Tiled, key from preload
-    const layer = map.createLayer('midground', midTiles, 0, -480).setScale(3); //name of layer in Tiled
+    const mainLayer = map.createLayer('midground', midTiles, 0, -480).setScale(3); //name of layer in Tiled
 
     // collider test
     // platforms = this.physics.add.staticGroup();
@@ -97,8 +98,8 @@ function create () {
     player.setBounce(0.2);
     // player.setCollideWorldBounds(true); //collide with the canvas size limit
     player.body.setGravityY(200);
-    this.physics.add.collider(player, layer, platforms);
-    layer.setCollisionBetween(1,160);
+    this.physics.add.collider(player, mainLayer, platforms);
+    mainLayer.setCollisionBetween(1,160);
 
     this.anims.create({
         key: 'left-walk',
@@ -125,7 +126,7 @@ function create () {
         repeat: -1
     });
 
-    this.cameras.main.setBounds(0, 0, map.widthInPixels*3, map.heightInPixels*3);
+    this.cameras.main.setBounds(0, -420, map.widthInPixels*3, map.heightInPixels*3);
     this.cameras.main.startFollow(player);
 }
 
