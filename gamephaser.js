@@ -26,13 +26,10 @@ var tileset;
 var stage;
 var player;
 var groundLayer;
+var overLayer;
 let direction = true; // for idle animation // true = right side, false = left side 
 
 const imgSrc = [
-    { key: 'bg', src: './assets/map_background.png'},
-    { key: 'mg', src: './assets/map_midground.png'},
-    { key: 'fg', src: './assets/map_foreground.png'},
-    { key: 'ground', src: './assets/platform.png'},
     { key: 'shadow', src: './assets/shadow.png'},
     { key: 'selectScreen', src: './assets/bg_select_s.png'}
 ]
@@ -40,10 +37,12 @@ const imgSrc = [
 const tilesSrc = [
     { key: 'bgtiles', src: './assets/tilemap_packed.png'},
     { key: 'mgtiles', src: './assets/tiles_packed.png'},
-    { key: 'collision', src: './assets/collision.png'},
 ]
 
-const stageSrc = { key: 'map', src: './assets/map.json' }
+const stageSrc = [
+    { key: 'map', src: './assets/map.json' },
+    { key: 'map2', src: './assets/map2.json' }
+]
 
 const spriteSrc = [
     { key: 'dinoGre', src: './assets/spritedino_vita_cut.png'},
@@ -57,18 +56,22 @@ const ssize = { w:22, h:18 } //new sprite frame size specs
 //const spriteFrame = { w: 24, h:24 } //old frame specs
 
 function preload () {
+    // load tiles
     for (i=0; i<tilesSrc.length; i++) {
         this.load.image(tilesSrc[i].key, tilesSrc[i].src)
     }
-
+    
     // load tile map
-    this.load.tilemapTiledJSON(stageSrc.key, stageSrc.src);
+    for (i=0; i<stageSrc.length; i++) {
+        this.load.tilemapTiledJSON(stageSrc[i].key, stageSrc[i].src);
+    }
 
     // loading images
     for (i=0; i<imgSrc.length; i++) {
         this.load.image(imgSrc[i].key, imgSrc[i].src)
     }
 
+    // load sprites
     for (i=0; i<spriteSrc.length; i++) {
         this.load.spritesheet(
             spriteSrc[i].key, 
@@ -80,27 +83,39 @@ function preload () {
 
 
 function create () {
-    sky = this.add.image(0, 350, 'bg').setScale(3); //sky background
-
-    map = this.make.tilemap({ key: stageSrc.key, tileWidth: tsize.w, tileHeight: tsize.h })
+    // make map
+    map = this.make.tilemap({ key: stageSrc[1].key, tileWidth: tsize.w, tileHeight: tsize.h })
+    
+    // add tileset
     const midTiles = map.addTilesetImage('tiles_packed', 'mgtiles'); // name of tileset in Tiled, key from preload
-    const mainLayer = map.createLayer('midground', midTiles, 0, -480).setScale(3); //name of layer in Tiled
-
-    // collider test
-    // platforms = this.physics.add.staticGroup();
-    // platforms.create(400, 568, 'ground').setScale(2).refreshBody();
-    // platforms.create(600, 400, 'ground');
-    // platforms.create(50, 250, 'ground');
-    // platforms.create(750, 220, 'ground');
-
+    const backTiles = map.addTilesetImage('tilemap_packed', 'bgtiles'); // name of tileset in Tiled, key from preload
+    
+    // create layers
+    // first parameter is 'name of layer in Tiled'
+    const bgLayer = map.createLayer('background', backTiles, 0, -480).setScale(3); 
+    const cloudLayer = map.createLayer('main-clouds', midTiles, 0, -480).setScale(3); 
+    const groundLayer = map.createLayer('main-ground', midTiles, 0, -480).setScale(3); 
+    const waterLayer = map.createLayer('main-water', midTiles, 0, -480).setScale(3); 
+    const etcLayer = map.createLayer('main-etc', midTiles, 0, -480).setScale(3); 
+    
+    // add player
     player = this.physics.add.sprite(150, 200, 'dinoGre').setScale(3);
-
-    player.setBounce(0.2);
+    
+    // render overlay after player
+    overLayer = map.createLayer('overlay', midTiles, 0, -480).setScale(3); //'name of layer in Tiled'
+    
     // player.setCollideWorldBounds(true); //collide with the canvas size limit
+    player.setBounce(0.2);
     player.body.setGravityY(200);
-    this.physics.add.collider(player, mainLayer, platforms);
-    mainLayer.setCollisionBetween(1,160);
-
+    groundLayer.setCollisionBetween(1,160);
+    this.physics.add.collider(player, groundLayer);
+        
+    // show hidden area
+    overLayer.setTileIndexCallback([19, 39, 23, 24, 25, 123, 124], hitHidden, this);
+    // detect touch overlay/hidden area and run line above
+    this.physics.add.overlap(player, overLayer);
+    
+    /////////////////// player animation
     this.anims.create({
         key: 'left-walk',
         frames: this.anims.generateFrameNumbers('dinoGre', { frames: [42, 43, 44, 45, 46, 47]}),
@@ -126,8 +141,18 @@ function create () {
         repeat: -1
     });
 
+    // camera
     this.cameras.main.setBounds(0, -420, map.widthInPixels*3, map.heightInPixels*3);
     this.cameras.main.startFollow(player);
+}
+
+function hitHidden (sprite, tile)
+{
+    tile.alpha = 0.5;
+
+    // Return true to exit processing collision of this tile vs the sprite - in this case, it
+    // doesn't matter since the tiles are not set to collide.
+    return false;
 }
 
 function update () {
@@ -150,9 +175,6 @@ function update () {
         }
     }
 
-    // if (cursors.up.isDown && player.body.touching.down) {
-    //     player.setVelocityY(-450);
-    // }
     if (cursors.up.isDown && player.body.onFloor()) {
         player.setVelocityY(-450);
     }
