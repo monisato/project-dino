@@ -84,7 +84,7 @@ function preload () {
 
 function create () {
     // make map
-    map = this.make.tilemap({ key: stageSrc[1].key, tileWidth: tsize.w, tileHeight: tsize.h })
+    map = this.make.tilemap({ key: stageSrc[0].key, tileWidth: tsize.w, tileHeight: tsize.h })
     
     // add tileset
     const midTiles = map.addTilesetImage('tiles_packed', 'mgtiles'); // name of tileset in Tiled, key from preload
@@ -97,6 +97,7 @@ function create () {
     const groundLayer = map.createLayer('main-ground', midTiles, 0, -480).setScale(3); 
     const waterLayer = map.createLayer('main-water', midTiles, 0, -480).setScale(3); 
     const etcLayer = map.createLayer('main-etc', midTiles, 0, -480).setScale(3); 
+    const diaLayer = map.createLayer('diamonds', midTiles, 0, -480).setScale(3); 
     
     // add player
     player = this.physics.add.sprite(150, 200, 'dinoGre').setScale(3);
@@ -110,12 +111,18 @@ function create () {
     groundLayer.setCollisionBetween(1,160);
     this.physics.add.collider(player, groundLayer);
         
-    // show hidden area
-    overLayer.setTileIndexCallback([19, 39, 23, 24, 25, 123, 124], hitHidden, this);
+    // show hidden area 
+    // 54, 74 water
+    overLayer.setTileIndexCallback([19, 39, 23, 24, 25, 54, 74, 123, 124], hitHidden, this);
     // detect touch overlay/hidden area and run line above
     this.physics.add.overlap(player, overLayer);
+
+    // collect diamond
+    // 54, 74 water
+    // overLayer.setTileIndexCallback([19, 39, 23, 24, 25, 54, 74, 123, 124], hitHidden, this);
+    // detect touch overlay/hidden area and run line above
     
-    /////////////////// player animation
+    /////////////////// player movement animation
     this.anims.create({
         key: 'left-walk',
         frames: this.anims.generateFrameNumbers('dinoGre', { frames: [42, 43, 44, 45, 46, 47]}),
