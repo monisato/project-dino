@@ -27,7 +27,14 @@ var stage;
 var player;
 var groundLayer;
 var overLayer;
+var diaLayer;
+var flagLayer;
+
 let direction = true; // for idle animation // true = right side, false = left side 
+
+// counters
+let diaCounter;
+let livesCounter;
 
 const imgSrc = [
     { key: 'shadow', src: './assets/shadow.png'},
@@ -35,13 +42,14 @@ const imgSrc = [
 ]
 
 const tilesSrc = [
-    { key: 'bgtiles', src: './assets/tilemap_packed.png'},
+    { key: 'bgtiles', src: './assets/tilemap_packed_18px.png'},
     { key: 'mgtiles', src: './assets/tiles_packed.png'},
 ]
 
 const stageSrc = [
     { key: 'map', src: './assets/map.json' },
-    { key: 'map2', src: './assets/map2.json' }
+    { key: 'map2', src: './assets/map2.json' },
+    { key: 'map3', src: './assets/map3.json' }
 ]
 
 const spriteSrc = [
@@ -84,7 +92,7 @@ function preload () {
 
 function create () {
     // make map
-    map = this.make.tilemap({ key: stageSrc[0].key, tileWidth: tsize.w, tileHeight: tsize.h })
+    map = this.make.tilemap({ key: stageSrc[2].key, tileWidth: tsize.w, tileHeight: tsize.h })
     
     // add tileset
     const midTiles = map.addTilesetImage('tiles_packed', 'mgtiles'); // name of tileset in Tiled, key from preload
@@ -97,10 +105,12 @@ function create () {
     const groundLayer = map.createLayer('main-ground', midTiles, 0, -480).setScale(3); 
     const waterLayer = map.createLayer('main-water', midTiles, 0, -480).setScale(3); 
     const etcLayer = map.createLayer('main-etc', midTiles, 0, -480).setScale(3); 
-    const diaLayer = map.createLayer('diamonds', midTiles, 0, -480).setScale(3); 
+    diaLayer = map.createLayer('diamonds', midTiles, 0, -480).setScale(3); 
+    flagLayer = map.createLayer('flag', midTiles, 0, -480).setScale(3); 
     
     // add player
     player = this.physics.add.sprite(150, 200, 'dinoGre').setScale(3);
+    
     
     // render overlay after player
     overLayer = map.createLayer('overlay', midTiles, 0, -480).setScale(3); //'name of layer in Tiled'
@@ -118,9 +128,10 @@ function create () {
     this.physics.add.overlap(player, overLayer);
 
     // collect diamond
-    // 54, 74 water
-    // overLayer.setTileIndexCallback([19, 39, 23, 24, 25, 54, 74, 123, 124], hitHidden, this);
-    // detect touch overlay/hidden area and run line above
+    // 68 diamond
+    diaLayer.setTileIndexCallback([68], hitDiamond, this);
+    // detect touch and hide diamond
+    this.physics.add.overlap(player, diaLayer);
     
     /////////////////// player movement animation
     this.anims.create({
@@ -156,6 +167,20 @@ function create () {
 function hitHidden (sprite, tile)
 {
     tile.alpha = 0.5;
+
+    // Return true to exit processing collision of this tile vs the sprite - in this case, it
+    // doesn't matter since the tiles are not set to collide.
+    return false;
+}
+
+function hitDiamond (sprite, tile)
+{
+    if (tile.alpha == 0) {
+        return false;
+    }
+
+    tile.alpha = 0;
+    diaCounter += 1;
 
     // Return true to exit processing collision of this tile vs the sprite - in this case, it
     // doesn't matter since the tiles are not set to collide.

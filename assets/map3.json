@@ -87,7 +87,7 @@
          "name":"main-etc",
          "opacity":1,
          "type":"tilelayer",
-         "visible":false,
+         "visible":true,
          "width":45,
          "x":0,
          "y":0
@@ -132,7 +132,7 @@
          "name":"main-ground",
          "opacity":1,
          "type":"tilelayer",
-         "visible":false,
+         "visible":true,
          "width":45,
          "x":0,
          "y":0
@@ -177,7 +177,7 @@
          "name":"main-water",
          "opacity":1,
          "type":"tilelayer",
-         "visible":false,
+         "visible":true,
          "width":45,
          "x":0,
          "y":0
@@ -222,7 +222,7 @@
          "name":"main-clouds",
          "opacity":1,
          "type":"tilelayer",
-         "visible":false,
+         "visible":true,
          "width":45,
          "x":0,
          "y":0
@@ -267,7 +267,7 @@
          "name":"diamonds",
          "opacity":1,
          "type":"tilelayer",
-         "visible":false,
+         "visible":true,
          "width":45,
          "x":0,
          "y":0
@@ -312,7 +312,7 @@
          "name":"flag",
          "opacity":1,
          "type":"tilelayer",
-         "visible":false,
+         "visible":true,
          "width":45,
          "x":0,
          "y":0
@@ -355,9 +355,9 @@
          "height":34,
          "id":2,
          "name":"overlay",
-         "opacity":0.45,
+         "opacity":1,
          "type":"tilelayer",
-         "visible":false,
+         "visible":true,
          "width":45,
          "x":0,
          "y":0
@@ -369,26 +369,36 @@
  "tiledversion":"1.9.1",
  "tileheight":18,
  "tilesets":[
-        {
-         "columns":20,
-         "firstgid":1,
-         "image":"tiles_packed.png",
-         "imageheight":162,
-         "imagewidth":360,
-         "margin":0,
-         "name":"tiles_packed",
-         "spacing":0,
-         "tilecount":180,
-         "tileheight":18,
-         "tilewidth":18,
-         "transparentcolor":"#ff00ff"
-        }, 
-        {
-         "firstgid":181,
-         "source":"tilemap_packed_18px.tsx"
-        }],
- "tilewidth":18,
- "type":"map",
- "version":"1.9",
- "width":45
+    {
+     "columns":20,
+     "firstgid":1,
+     "image":"tiles_packed.png",
+     "imageheight":162,
+     "imagewidth":360,
+     "margin":0,
+     "name":"tiles_packed",
+     "spacing":0,
+     "tilecount":180,
+     "tileheight":18,
+     "tilewidth":18,
+     "transparentcolor":"#ff00ff"
+    }, 
+    {
+     "columns":6,
+     "firstgid":181,
+     "image":"tilemap_packed_18px.png",
+     "imageheight":36,
+     "imagewidth":108,
+     "margin":0,
+     "name":"tilemap_packed",
+     "spacing":0,
+     "tilecount":12,
+     "tileheight":18,
+     "tilewidth":18,
+     "transparentcolor":"#ff00ff"
+    }],
+"tilewidth":18,
+"type":"map",
+"version":"1.9",
+"width":45
 }
